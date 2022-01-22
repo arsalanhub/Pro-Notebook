@@ -1,13 +1,29 @@
-const express = require('express')
-const User = require('../models/User')
-const router = express.Router()
+const express = require("express");
+const User = require("../models/User");
+const router = express.Router();
+const { body, validationResult } = require("express-validator");
 
 // Create a user using: POST "/api/auth/"
-router.post('/', (req, res) => {
-    console.log(req.body)
-    const user = User(req.body)
-    user.save()
-    res.send(req.body)
-})
+router.post(
+  "/",
+  [
+    body("name", "Please enter valid name").isLength({ min: 3 }),
+    body("email", "Please enter valid email id").isEmail(),
+    body("password", "Password must be of atleast 5 length").isLength({
+      min: 5,
+    }),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    User.create({
+      name: req.body.name,
+      password: req.body.password,
+      email: req.body.email,
+    }).then((user) => res.json(user));
+  }
+);
 
-module.exports = router
+module.exports = router;
