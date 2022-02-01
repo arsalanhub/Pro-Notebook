@@ -21,7 +21,4 @@ const UserSchema = new Schema({
   },
 });
 const User = mongoose.model("user", UserSchema);
-
-// It prevents dublicate user
-User.createIndexes();
 module.exports = User;
